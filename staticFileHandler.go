@@ -4,22 +4,27 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 	"strings"
 )
 
 // Setup Static
-func SetupStaticFileHandler(httpRoute string, fileSystemPath string) {
+func SetupStaticFileHandler(httpRoute string, fileSystemPath string) error {
 
-	fsys := dotFileHidingFileSystem{http.Dir("/static/")}
-	//http.FileServer(fsys)
-	// handler := func(w http.ResponseWriter, r *http.Request) {
-	// 	log.Printf("In static Handler:%s %v", path, fsys)
-	// 	http.FileServer(fsys)
-	// }
-	//RouteHandler(httpRoute, http.FileServer(fsys))
-	//mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(fsys)))
-	mux.Handle("/static/", http.FileServer(fsys))
-	//return handler
+	// Check to see if the directory exists. These issues can be hard
+	// to troubleshoot so prechecking is in order.
+	d, err := os.Stat(fileSystemPath)
+	if err != nil {
+		return err
+	}
+	if !d.IsDir() {
+		return fmt.Errorf("The path %s in not a directory", fileSystemPath)
+	}
+
+	fsys := dotFileHidingFileSystem{http.Dir(fileSystemPath)}
+
+	mux.Handle(httpRoute, http.StripPrefix("/"+fileSystemPath, http.FileServer(fsys)))
+	return nil
 }
 
 // These Functions are copied directly from the net/http package
@@ -70,6 +75,7 @@ type dotFileHidingFileSystem struct {
 // with whose name starts with a period in its path.
 func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
 
+	fmt.Printf("requested %s\n", name)
 	//fmt.Printf("%s\n", name)
 	if containsDotFile(name) { // If dot file, return 403 response
 		return nil, fs.ErrPermission

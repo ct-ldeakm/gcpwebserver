@@ -33,12 +33,11 @@ func SetupStaticFileHandler(httpRoute string, fileSystemPath string) error {
 }
 
 // These Functions are copied directly from the net/http package
-
+//
 // containsDotFile reports whether name contains a path element starting with a period.
 // The name is assumed to be a delimited by forward slashes, as guaranteed
 // by the http.FileSystem interface.
 func containsDotFile(name string) bool {
-	fmt.Printf("Requested: %s", name)
 	parts := strings.Split(name, "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
@@ -83,7 +82,6 @@ type dotFileHidingFileSystem struct {
 func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
 
 	fmt.Printf("requested %s\n", name)
-	//fmt.Printf("%s\n", name)
 	if containsDotFile(name) { // If dot file, return 403 response
 		return nil, fs.ErrPermission
 	}

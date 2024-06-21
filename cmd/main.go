@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"gcpwebserv"
-	"log"
+	"log/slog"
 	"os"
 )
 
@@ -17,21 +16,16 @@ func main() {
 	server := gcpwebserv.Setup(nil)
 	err := gcpwebserv.SetupStaticFileHandler("/static/", "static")
 	if err != nil {
-		fmt.Printf("%s", err)
 		os.Exit(1)
 	}
 
 	err = gcpwebserv.SetupStaticFileHandler("/", "app")
 	if err != nil {
-		fmt.Printf("%s", err)
 		os.Exit(1)
 	}
-	// Add Static Routes
-	//gcpwebserv.SetupStaticFileHandler("/app/", "./app")
-	//addRoutes()
 
 	if err := gcpwebserv.Run(ctx, server); err != nil {
-		log.Printf("%s", err)
+		slog.Info("Server Exiting", "status", err)
 	}
 
 }

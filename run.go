@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -33,10 +34,12 @@ func Run(ctx context.Context, server *http.Server) error {
 	for {
 		var sd bool
 		select {
-		case <-sigChan:
+		case sig := <-sigChan:
 			sd = true
+			slog.Info("Shutdown signal received", "signal", sig)
 		case <-ctx.Done():
 			sd = true
+			slog.Info("Context done signaled")
 		}
 		if sd {
 			break

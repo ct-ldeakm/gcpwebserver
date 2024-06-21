@@ -2,6 +2,9 @@ package gcpwebserv
 
 import "net/http"
 
+// TODO: Refactor this into the setup file and remove and
+// make the pointer to the server global instead of the
+// mux.
 // Adding a global mux here to simplify
 var mux *http.ServeMux
 

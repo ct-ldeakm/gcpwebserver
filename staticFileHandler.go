@@ -3,21 +3,26 @@ package gcpwebserv
 import (
 	"fmt"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 )
 
-// Setup Static
+// SetupStaticFileHandler sets up a static file server based on the
+// route and path provided. The diectory must exist to succeed. Using
+// the default route of / will not work currently
 func SetupStaticFileHandler(httpRoute string, fileSystemPath string) error {
 
 	// Check to see if the directory exists. These issues can be hard
 	// to troubleshoot so prechecking is in order.
 	d, err := os.Stat(fileSystemPath)
 	if err != nil {
+		slog.Error("Error with static file server", "error", err)
 		return err
 	}
 	if !d.IsDir() {
+		slog.Error("Static Path is not a directory", "path", fileSystemPath)
 		return fmt.Errorf("The path %s in not a directory", fileSystemPath)
 	}
 
@@ -33,6 +38,7 @@ func SetupStaticFileHandler(httpRoute string, fileSystemPath string) error {
 // The name is assumed to be a delimited by forward slashes, as guaranteed
 // by the http.FileSystem interface.
 func containsDotFile(name string) bool {
+	fmt.Printf("Requested: %s", name)
 	parts := strings.Split(name, "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
@@ -52,7 +58,8 @@ type dotFileHidingFile struct {
 // Readdir is a wrapper around the Readdir method of the embedded File
 // that filters out all files that start with a period in their name.
 func (f dotFileHidingFile) Readdir(n int) (fis []fs.FileInfo, err error) {
-	fmt.Printf("%s", "In Func")
+
+	fmt.Printf("n:%v\n", n)
 	files, err := f.File.Readdir(n)
 	for _, file := range files { // Filters out the dot files
 		fmt.Printf("%s", file.Name())
@@ -87,7 +94,7 @@ func (fsys dotFileHidingFileSystem) Open(name string) (http.File, error) {
 		return nil, err
 	}
 
-	// Prevents directories from being listed
+	// Updated to prevents directories from being listed
 	stat, err := file.Stat()
 	if err != nil {
 		return nil, err

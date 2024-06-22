@@ -46,5 +46,8 @@ func Run(ctx context.Context, server *http.Server) error {
 		}
 
 	}
-	return server.Shutdown(shutdownCtx)
+
+	err := server.Shutdown(shutdownCtx)
+	slog.Info("Server Exiting", "status", err)
+	return err
 }

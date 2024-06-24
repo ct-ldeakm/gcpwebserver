@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gcpwebserv"
 	"log/slog"
 	"os"
@@ -21,6 +22,12 @@ func main() {
 
 	err = gcpwebserv.SetupStaticFileHandler("/", "app")
 	if err != nil {
+		os.Exit(1)
+	}
+
+	err = gcpwebserv.RegisterGCSHandler(ctx)
+	if err != nil {
+		fmt.Printf("%s", err)
 		os.Exit(1)
 	}
 

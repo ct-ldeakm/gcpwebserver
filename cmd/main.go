@@ -20,12 +20,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = gcpwebserv.SetupStaticFileHandler("/", "app")
+	err = gcpwebserv.RegisterGCSHandler(ctx)
 	if err != nil {
+		fmt.Printf("%s", err)
 		os.Exit(1)
 	}
 
-	err = gcpwebserv.RegisterGCSHandler(ctx)
+	err = gcpwebserv.RegisterFirestoreNativeHandler(ctx, "ups-hacka", "(default)")
+	if err != nil {
+		fmt.Printf("%s", err)
+		os.Exit(1)
+	}
+
+	err = gcpwebserv.RegisterPubSubHandler(ctx, "ups-hacka", "poop")
 	if err != nil {
 		fmt.Printf("%s", err)
 		os.Exit(1)

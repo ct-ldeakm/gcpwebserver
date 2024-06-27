@@ -15,11 +15,12 @@ import (
 	_ "google.golang.org/grpc/xds/googledirectpath"
 )
 
+// Holding the client as a global since it is concurent safe.
+// there is a minor performance gain create a global var.
 var gcsClient *storage.Client
 
 // RegisterGCSHandler registers a prebuilt handler for GCS. Custom options can
-// be provided using the opts param. The client default to using the GRPC
-// interface for storage and json results. A composable http url path is used to
+// be provided using the opts param. A composable http url path is used to
 // to get any file in gcs in the form https://domain.com/gcs/bucket/folder/file.file
 // In addition, a global reusable storage client is created and maintained in
 // this package and will closed when the server shuts down.
@@ -28,12 +29,14 @@ func RegisterGCSHandler(ctx context.Context, opts ...option.ClientOption) error 
 	// in the storage package at some point.
 	opts = append(opts, storage.WithJSONReads())
 	var err error
-	if gcsClient == nil {
-		gcsClient, err = storage.NewClient(ctx, opts...)
-		if err != nil {
-			return err
-		}
+
+	// Creating a GCS client for reuse
+	gcsClient, err = storage.NewClient(ctx, opts...)
+	if err != nil {
+		return err
 	}
+	clientManager.Add("gcs", gcsClient)
+
 	Route("/gcs/", getObjectFromGCS)
 	return nil
 }
@@ -53,7 +56,7 @@ func getObjectFromGCS(w http.ResponseWriter, r *http.Request) {
 	// Rejoin the path getting just the file path
 	obj := strings.Join(sPath[2:len(sPath)], "/")
 
-	// Attemp to get the file requested
+	// Attempt to get the file requested
 	item, err := gcsClient.Bucket(sPath[1]).Object(obj).NewReader(r.Context())
 	if err != nil {
 		if errors.Is(err, storage.ErrObjectNotExist) {

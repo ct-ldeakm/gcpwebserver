@@ -48,6 +48,12 @@ func Run(ctx context.Context, server *http.Server) error {
 	}
 
 	err := server.Shutdown(shutdownCtx)
+	if err != nil {
+		slog.Error("Server Shutdown Error", "error", err)
+	}
+
+	// Closing all clients for gcs services
+	clientManager.CloseAll()
 	slog.Info("Server Exiting", "status", err)
 	return err
 }

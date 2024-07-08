@@ -35,7 +35,7 @@ func RegisterGCSHandler(ctx context.Context, opts ...option.ClientOption) error 
 	if err != nil {
 		return err
 	}
-	clientManager.Add("gcs", gcsClient)
+	AddClientToCache("gcs", gcsClient)
 
 	Route("/gcs/", getObjectFromGCS)
 	return nil

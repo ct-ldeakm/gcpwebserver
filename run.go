@@ -53,7 +53,7 @@ func Run(ctx context.Context, server *http.Server) error {
 	}
 
 	// Closing all clients for gcs services
-	clientManager.CloseAll()
+	closeAllClients()
 	slog.Info("Server Exiting", "status", err)
 	return err
 }

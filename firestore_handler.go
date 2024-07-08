@@ -36,7 +36,7 @@ func RegisterFirestoreNativeHandler(ctx context.Context, projectId string, datab
 		return err
 	}
 
-	clientManager.Add(fmt.Sprintf("firestore-%s-%s", projectId, databaseId), firestoreClient)
+	AddClientToCache(fmt.Sprintf("firestore-%s-%s", projectId, databaseId), firestoreClient)
 
 	Route("/firestore/", getDocFromFirestore)
 	return nil
@@ -64,7 +64,7 @@ func getDocFromFirestore(w http.ResponseWriter, r *http.Request) {
 	// Get the forestore client from cache. This is done so we can
 	// register multiple connections to mulitple projects and databased
 	// with the same handler and still leverage client caching
-	firestoreClient, ok := clientManager.Get(fmt.Sprintf("firestore-%s-%s", sPath[1], sPath[2])).(*firestore.Client)
+	firestoreClient, ok := GetCachedClient(fmt.Sprintf("firestore-%s-%s", sPath[1], sPath[2])).(*firestore.Client)
 	if !ok {
 		slog.Error("Error getting firestore client from cache", "ispresent", ok)
 		http.Error(w, "Internal Server", http.StatusInternalServerError)

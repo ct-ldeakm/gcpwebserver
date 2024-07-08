@@ -3,6 +3,7 @@ package gcpwebserv
 import (
 	"context"
 	"fmt"
+
 	"io"
 	"log/slog"
 	"net/http"
@@ -18,7 +19,7 @@ func RegisterPubSubHandler(ctx context.Context, projectId string, topicId string
 		return err
 	}
 
-	clientManager.Add(fmt.Sprintf("pubsub-%s-%s", projectId, topicId), client)
+	AddClientToCache(fmt.Sprintf("pubsub-%s-%s", projectId, topicId), client)
 
 	Route("POST /pubsub/{projectId}/{topicId}", publishPubSubMessage)
 	return nil
@@ -41,7 +42,7 @@ func publishPubSubMessage(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 	topicId := r.PathValue("topicId")
 
-	client, ok := clientManager.Get(fmt.Sprintf("pubsub-%s-%s", projectId, topicId)).(*pubsub.Client)
+	client, ok := GetCachedClient(fmt.Sprintf("pubsub-%s-%s", projectId, topicId)).(*pubsub.Client)
 	if !ok {
 		slog.Error("Unable to retreive client from cache", "ispresent", ok)
 		http.Error(w, "Internal Server", http.StatusInternalServerError)

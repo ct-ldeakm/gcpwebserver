@@ -1,4 +1,4 @@
-module gcpwebserv
+module github.com/goog-lukemc/gcpwebserv
 
 go 1.22.1
 

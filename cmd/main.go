@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"gcpwebserv"
 	"log/slog"
 	"os"
+
+	"github.com/goog-lukemc/gcpwebserv"
 )
 
 func main() {

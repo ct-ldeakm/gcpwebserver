@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/goog-lukemc/gcpwebserv"
+	"github.com/ct-ldeakm/gcpwebserv"
 )
 
 func main() {

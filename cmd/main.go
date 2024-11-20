@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/ct-ldeakm/gcpwebserv"
+	"github.com/ct-ldeakm/gcpwebserver"
 )
 
 func main() {
@@ -14,13 +14,13 @@ func main() {
 
 	//Configures a default http server with the GCP default such as port 8080.
 	// It can be overridden by providing a pre configured http.Server
-	server := gcpwebserv.Setup(nil)
-	err := gcpwebserv.SetupStaticFileHandler("/static/", "static")
+	server := gcpwebserver.Setup(nil)
+	err := gcpwebserver.SetupStaticFileHandler("/static/", "static")
 	if err != nil {
 		os.Exit(1)
 	}
 
-	if err := gcpwebserv.Run(ctx, server); err != nil {
+	if err := gcpwebserver.Run(ctx, server); err != nil {
 		slog.Info("Server Exiting", "status", err)
 	}
 

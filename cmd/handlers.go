@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
-	"github.com/ct-ldeakm/gcpwebserv"
+	"github.com/ct-ldeakm/gcpwebserver"
 )
 
 // addRoutes simpley wraps the lig function to add a route to the mux handler
 // so that a one to one mapping of route to handler can be seen for troubleshooting
 func addRoutes() {
-	gcpwebserv.Route("/{id}", pathTest)
+	gcpwebserver.Route("/{id}", pathTest)
 }
 
 // Create you handelers below this line

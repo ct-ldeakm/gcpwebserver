@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/ct-ldeakm/gcpwebserver"
+	gcpwebserver "github.com/ct-ldeakm/gcpwebserver"
 )
 
 // addRoutes simpley wraps the lig function to add a route to the mux handler
